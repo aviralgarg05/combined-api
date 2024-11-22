@@ -135,7 +135,7 @@ def instagram_scraper():
         session.cookies.set("sessionid", "your_valid_sessionid_here")
 
         # Updated GraphQL URL
-        graphql_url = f"https://www.instagram.com/graphql/query/?query_hash=<QUERY_HASH>&variables=%7B%22shortcode%22%3A%22{shortcode.group(1)}%22%7D"
+        graphql_url = f"https://www.instagram.com/p/{shortcode.group(1)}/?__a=1&__d=dis"
         headers = {
             "User-Agent": USER_AGENT,
             "X-IG-App-ID": X_IG_APP_ID,
@@ -145,8 +145,14 @@ def instagram_scraper():
         if response.status_code != 200:
             return jsonify({"error": f"Failed to fetch Instagram data: {response.status_code}"}), response.status_code
 
+        # Log raw response for debugging
         json_data = response.json()
-        caption = json_data.get('data', {}).get('shortcode_media', {}).get('edge_media_to_caption', {}).get('edges', [{}])[0].get('node', {}).get('text', "")
+        print(f"Raw Instagram response: {json_data}")
+
+        # Parse caption from response
+        caption = json_data.get('graphql', {}).get('shortcode_media', {}).get('edge_media_to_caption', {}).get('edges', [{}])[0].get('node', {}).get('text', "")
+        if not caption:
+            return jsonify({"error": "Could not extract caption from the Instagram post."}), 400
 
         # Generate product listing from Instagram caption
         listing = generate_product_listing(caption)
