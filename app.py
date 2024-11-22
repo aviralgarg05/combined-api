@@ -129,7 +129,7 @@ def instagram_scraper():
         if not shortcode:
             return jsonify({"error": "Invalid Instagram URL format"}), 400
 
-        # Create a session to handle cookies and add headers
+        # Create a session to handle cookies and headers
         session = requests.Session()
 
         # Set your Instagram cookies here (copy from your browser after logging in)
@@ -142,9 +142,13 @@ def instagram_scraper():
             "X-IG-App-ID": X_IG_APP_ID,
         }
 
-        # Send request with session and headers
-        response = session.get(graphql_url, headers=headers)
+        # Send the request and track redirects
+        response = session.get(graphql_url, headers=headers, allow_redirects=True)
 
+        # Print the final URL after redirects to help debug
+        print(f"Final URL: {response.url}")
+
+        # If Instagram is redirecting too much or to a login page, handle it
         if response.status_code != 200:
             return jsonify({"error": f"Failed to fetch Instagram data: {response.status_code}"}), response.status_code
 
