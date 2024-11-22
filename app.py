@@ -130,31 +130,23 @@ def instagram_scraper():
         if not shortcode:
             return jsonify({"error": "Invalid Instagram URL format"}), 400
 
-        # Create a session to handle cookies and headers
+        # Use session for cookies and headers
         session = requests.Session()
+        session.cookies.set("sessionid", "your_valid_sessionid_here")
 
-        # Set your Instagram cookies here (copy from your browser after logging in)
-        session.cookies.set("sessionid", "your_sessionid_here")
-
-        # Instagram GraphQL URL
-        graphql_url = f"https://www.instagram.com/p/{shortcode.group(1)}/?__a=1&__d=dis"
+        # Updated GraphQL URL
+        graphql_url = f"https://www.instagram.com/graphql/query/?query_hash=<QUERY_HASH>&variables=%7B%22shortcode%22%3A%22{shortcode.group(1)}%22%7D"
         headers = {
             "User-Agent": USER_AGENT,
             "X-IG-App-ID": X_IG_APP_ID,
         }
 
-        # Send the request and track redirects
-        response = session.get(graphql_url, headers=headers, allow_redirects=True)
-
-        # Print the final URL after redirects to help debug
-        print(f"Final URL: {response.url}")
-
-        # If Instagram is redirecting too much or to a login page, handle it
+        response = session.get(graphql_url, headers=headers)
         if response.status_code != 200:
             return jsonify({"error": f"Failed to fetch Instagram data: {response.status_code}"}), response.status_code
 
         json_data = response.json()
-        caption = json_data.get('graphql', {}).get('shortcode_media', {}).get('edge_media_to_caption', {}).get('edges', [{}])[0].get('node', {}).get('text', "")
+        caption = json_data.get('data', {}).get('shortcode_media', {}).get('edge_media_to_caption', {}).get('edges', [{}])[0].get('node', {}).get('text', "")
 
         # Generate product listing from Instagram caption
         listing = generate_product_listing(caption)
