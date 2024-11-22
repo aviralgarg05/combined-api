@@ -36,6 +36,7 @@ google-generativeai
 googleapis-common-protos
 grpcio
 grpcio-status
+gunicorn
 httplib2
 idna
 importlib_metadata
