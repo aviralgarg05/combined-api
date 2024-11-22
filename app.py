@@ -7,10 +7,11 @@ import google.generativeai as genai
 app = Flask(__name__)
 CORS(app)
 
-GENAI_API_KEY = "AIzaSyAH4nMhPaJyV0U4WCIPd5JPR0m5vd6RPz0"
-TWITTER_BEARER_TOKEN = "AAAAAAAAAAAAAAAAAAAAABU4wwEAAAAAfQ6aNhf8Ity2iJAhLyoO7x1AIx0%3DHmOHVyi7XOByv1sgOESFo3bDNzCewy7whjVvb83WDjxN9bFVrw"
+# Set up your API keys
+GENAI_API_KEY = "AIzaSyAH4nMhPaJyV0U4WCIPd5JPR0m5vd6RPz0"  # Replace with your actual Gemini API key
+TWITTER_BEARER_TOKEN = "AAAAAAAAAAAAAAAAAAAAABU4wwEAAAAAfQ6aNhf8Ity2iJAhLyoO7x1AIx0%3DHmOHVyi7XOByv1sgOESFo3bDNzCewy7whjVvb83WDjxN9bFVrw"  # Replace with your Twitter Bearer Token
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
-X_IG_APP_ID = "936619743392459"  # Updated x-ig-app-id
+X_IG_APP_ID = "936619743392459"  # Updated Instagram App ID
 
 genai.configure(api_key=GENAI_API_KEY)
 
