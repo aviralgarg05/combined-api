@@ -129,17 +129,21 @@ def instagram_scraper():
         if not shortcode:
             return jsonify({"error": "Invalid Instagram URL format"}), 400
 
-        graphql_url = f"https://www.instagram.com/p/{shortcode.group(1)}/?__a=1&__d=dis"
-        headers = {"User-Agent": USER_AGENT, "X-IG-App-ID": X_IG_APP_ID}
-
-        # Using session to handle cookies
+        # Create a session to handle cookies and add headers
         session = requests.Session()
-        session.headers.update(headers)
-        response = session.get(graphql_url)
 
-        # Log the response for debugging
-        print(f"Instagram Response Code: {response.status_code}")
-        print(f"Instagram Response Body: {response.text}")
+        # Set your Instagram cookies here (copy from your browser after logging in)
+        session.cookies.set("sessionid", "your_sessionid_here")
+
+        # Instagram GraphQL URL
+        graphql_url = f"https://www.instagram.com/p/{shortcode.group(1)}/?__a=1&__d=dis"
+        headers = {
+            "User-Agent": USER_AGENT,
+            "X-IG-App-ID": X_IG_APP_ID,
+        }
+
+        # Send request with session and headers
+        response = session.get(graphql_url, headers=headers)
 
         if response.status_code != 200:
             return jsonify({"error": f"Failed to fetch Instagram data: {response.status_code}"}), response.status_code
@@ -147,6 +151,7 @@ def instagram_scraper():
         json_data = response.json()
         caption = json_data.get('graphql', {}).get('shortcode_media', {}).get('edge_media_to_caption', {}).get('edges', [{}])[0].get('node', {}).get('text', "")
 
+        # Generate product listing from Instagram caption
         listing = generate_product_listing(caption)
         return jsonify(listing)
 
