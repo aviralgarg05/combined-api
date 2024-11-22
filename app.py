@@ -131,7 +131,15 @@ def instagram_scraper():
 
         graphql_url = f"https://www.instagram.com/p/{shortcode.group(1)}/?__a=1&__d=dis"
         headers = {"User-Agent": USER_AGENT, "X-IG-App-ID": X_IG_APP_ID}
-        response = requests.get(graphql_url, headers=headers)
+
+        # Using session to handle cookies
+        session = requests.Session()
+        session.headers.update(headers)
+        response = session.get(graphql_url)
+
+        # Log the response for debugging
+        print(f"Instagram Response Code: {response.status_code}")
+        print(f"Instagram Response Body: {response.text}")
 
         if response.status_code != 200:
             return jsonify({"error": f"Failed to fetch Instagram data: {response.status_code}"}), response.status_code
